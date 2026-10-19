@@ -1,4 +1,2 @@
-setuptools
-crewai==0.28.8
 langchain-groq
 streamlit
