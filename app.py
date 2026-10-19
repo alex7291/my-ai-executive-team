@@ -1,61 +1,123 @@
 import streamlit as st
-from langchain_google_genai import ChatGoogleGenerativeAI
+import google.generativeai as genai
 import os
 
 # --- SECURITY: API KEY ---
 if "GOOGLE_API_KEY" in st.secrets:
-    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+    api_key = st.secrets["GOOGLE_API_KEY"]
 else:
-    st.error("⚠️ API Key পাওয়া যায়নি! দয়া করে Secrets-এ GOOGLE_API_KEY যুক্ত করুন।")
+    st.error("⚠️ API Key missing!")
     st.stop()
 
-# AI মডেল সেটআপ (Gemini 1.5 Flash - Strong, Fast & Free)
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- AGENT CONFIGURATIONS ---
+# --- AGENT CONFIGURATIONS (Abstract & Professional) ---
 AGENTS = {
-    "CEO 👔": (
-        "You are the Visionary CEO. Your goal is to scale the business globally. "
-        "You provide strategic frameworks, analyze risks, and think 10 steps ahead. "
-        "Your tone is authoritative, inspiring and decisive."
-    ),
-    "CFO 💰": "You are the CFO. Your tone is analytical and focused on profitability and budgets.",
-    "CTO 💻": "You are the CTO. Your tone is technical and focused on scalability and innovation.",
-    "CMO 📢": "You are the CMO. Your tone is creative and focused on growth and branding.",
-    "Creative Director 🎨": "You are the Creative Director. Your tone is artistic and focused on UX/UI.",
-    "HR Manager 👥": "You are the HR Manager. Your tone is empathetic and focused on people and culture."
+    "CEO ◈": "You are the Visionary CEO. Your tone is authoritative, inspiring, and decisive. You provide high-level strategic frameworks.",
+    "CFO ⌬": "You are the CFO. Your tone is analytical and focused on financial architecture and profitability.",
+    "CTO ⌂": "You are the CTO. Your tone is technical, innovative, and focused on infrastructure and scalability.",
+    "CMO ⎈": "You are the CMO. Your tone is creative and focused on hyper-growth and brand dominance.",
+    "Creative Director ✧": "You are the Creative Director. Your tone is artistic and focused on aesthetic perfection and UX.",
+    "HR Manager ☊": "You are the HR Manager. Your tone is empathetic and focused on human capital and culture."
 }
 
 if "messages" not in st.session_state:
     st.session_state.messages = {agent: [] for agent in AGENTS.keys()}
 
 if "current_agent" not in st.session_state:
-    st.session_state.current_agent = "CEO 👔"
+    st.session_state.current_agent = "CEO ◈"
 
-st.set_page_config(page_title="AI Executive Board", layout="wide", page_icon="🚀")
+st.set_page_config(page_title="AI Executive Suite", layout="wide", page_icon="🌌")
 
+# --- ULTRA PREMIUM CSS (Cyber-Black Glassmorphism) ---
 st.markdown("""
     <style>
-        .stApp { background-color: #0E1117; color: white; }
-        [data-testid="stSidebar"] { background-color: #161B22; }
-        .stChatMessage { border-radius: 15px; margin-bottom: 10px; }
+        /* Main Application Background */
+        .stApp { 
+            background: radial-gradient(circle at top left, #1a1a1a, #000000); 
+            color: #E0E0E0; 
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Sidebar Styling */
+        [data-testid="stSidebar"] { 
+            background-color: rgba(10, 10, 10, 0.8) !important; 
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Premium Button Styling */
+        div.stButton > button {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #BBBBBB;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        div.stButton > button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #FFFFFF;
+            transform: translateX(5px);
+        }
+        
+        /* Active Agent Glow Effect */
+        div.stButton > button[data-testid="stBaseButton-primary"] {
+            background: linear-gradient(45deg, #FFFFFF, #BDBDBD) !important;
+            color: #000000 !important;
+            border: none !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* Chat Message Aesthetics */
+        .stChatMessage { 
+            background-color: rgba(255, 255, 255, 0.03) !important; 
+            border-radius: 20px !important; 
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 15px !important;
+            margin-bottom: 20px !important;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Header Styling */
+        h1 {
+            font-weight: 800 !important;
+            letter-spacing: -1px !important;
+            background: linear-gradient(to right, #FFFFFF, #888888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 """, unsafe_allow_html=True)
 
+# --- SIDEBAR ---
 with st.sidebar:
-    st.title("🏢 My Company")
+    st.title("🌌 Executive Suite")
     st.markdown("---")
-    st.subheader("Executive Team")
+    st.subheader("Board of Directors")
+    
     for agent_name in AGENTS.keys():
         if st.button(agent_name, use_container_width=True, 
                     type="primary" if st.session_state.current_agent == agent_name else "secondary"):
             st.session_state.current_agent = agent_name
             st.rerun()
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("---")
-    st.caption("Powered by Google Gemini 1.5 Flash")
+    st.caption("Quantum Core: Gemini 1.5 Flash")
 
+# --- MAIN CHAT AREA ---
 current_agent = st.session_state.current_agent
-st.title(f"Chat with {current_agent}")
+st.title(f"Interacting with {current_agent}")
 st.markdown(f"*{AGENTS[current_agent]}*")
 st.markdown("---")
 
@@ -63,18 +125,18 @@ for message in st.session_state.messages[current_agent]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input(f"Message {current_agent}..."):
+if prompt := st.chat_input(f"Transmit message to {current_agent}..."):
     st.session_state.messages[current_agent].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
+        with st.spinner("Processing Quantum Intelligence..."):
             try:
                 full_prompt = f"{AGENTS[current_agent]}\n\nUser: {prompt}\nAssistant:"
-                response = llm.invoke(full_prompt)
-                ai_message = response.content
+                response = model.generate_content(full_prompt)
+                ai_message = response.text
                 st.markdown(ai_message)
                 st.session_state.messages[current_agent].append({"role": "assistant", "content": ai_message})
             except Exception as e:
-                st.error(f"Error: {e}")
+                st.error(f"Transmission Error: {e}")
